@@ -1,0 +1,11 @@
+Source: twine-anansi-bridge
+Section: misc
+Priority: optional
+Maintainer: Mo McRoberts <mo.mcroberts@bbc.co.uk>
+Standards-Version: 3.9.3
+Build-Depends: debhelper (>= 8.0.0), autoconf, automake, libtool, libltdl-dev, librdf0-dev, uuid-dev, liburi-dev, libsql-dev, libjansson-dev, libawsclient-dev, libmq, libmq-dev, libtwine-dev
+
+Package: twine-anansi-brdige
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, libtwine, libcurl3, librdf0, libjansson4, libsql, libmq, libawsclient
+Description: Linked Data workflow engine (module API)
