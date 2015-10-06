@@ -457,6 +457,14 @@ ingest_write(char *ptr, size_t size, size_t nemb, void *userdata)
 	return size;
 }
 
+/* Debian Wheezy ships with libjansson 2.3, which doesn't include
+ * json_array_foreach()
+ */
+#ifndef json_array_foreach
+# define json_array_foreach(array, index, value) \
+	for(index = 0; index < json_array_size(array) && (value = json_array_get(array, index)); index++)
+#endif
+
 static int
 ingest_headers(json_t *dict, const char *graph, librdf_model *model)
 {
