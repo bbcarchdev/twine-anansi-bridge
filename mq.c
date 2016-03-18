@@ -233,7 +233,6 @@ anansi_mq_connect_recv_(MQ *self)
 		SET_SYSERR(self, EINVAL);
 		return -1;
 	}
-	twine_logf(LOG_DEBUG, PLUGIN_NAME ": MQ: establishing connection to <%s>\n", self->uri + 8);
 	dburi = NULL;
 	if(!strncasecmp(self->uri, "anansi:", 7))
 	{
@@ -243,10 +242,12 @@ anansi_mq_connect_recv_(MQ *self)
 			twine_logf(LOG_ERR, PLUGIN_NAME ": MQ: no database connection URI configured (see the 'db' setting in the [anansi] section)\n");
 			return -1;
 		}
+		twine_logf(LOG_DEBUG, PLUGIN_NAME ": MQ: establishing connection to <%s>\n", dburi);
 		self->sql = sql_connect(dburi);
 	}
 	else
 	{
+		twine_logf(LOG_DEBUG, PLUGIN_NAME ": MQ: establishing connection to <%s>\n", self->uri + 8);
 		self->sql = sql_connect(self->uri + 8);
 	}
 	if(!self->sql)
