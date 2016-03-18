@@ -119,7 +119,7 @@ static MQMESSAGEIMPL anansi_mqmessage_impl_ = {
 int
 anansi_mq_init(void *handle)
 {
-	if(mq_register("anansi:", anansi_mq_construct_, handle))
+	if(mq_register("anansi", anansi_mq_construct_, handle))
 	{
 		return -1;
 	}
