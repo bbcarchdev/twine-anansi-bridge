@@ -306,7 +306,7 @@ anansi_mq_next_(MQ *self, MQMESSAGE **msg)
 	while(1)
 	{
 		rs = sql_queryf(self->sql, "SELECT \"hash\" FROM \"crawl_resource\" WHERE \"state\" = %Q AND \"tinyhash\" %% %d = %d ORDER BY \"updated\" DESC LIMIT 1",
-			nodecount, nodeid, "ACCEPTED");
+			"ACCEPTED", nodecount, nodeid);
 		if(!rs)
 		{
 			twine_logf(LOG_CRIT,  PLUGIN_NAME ": MQ: %s\n", sql_error(self->sql));
