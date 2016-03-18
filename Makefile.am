@@ -26,13 +26,17 @@ sbin_PROGRAMS = twine-anansi-bridge
 
 twinemodule_LTLIBRARIES = anansi.la
 
+## twine-anansi-bridge is a daemon which reads updates from the Anansi
+## queue database and injects application/x-anansi-url messages into
+## a message queue via libmq.
+
 twine_anansi_bridge_CPPFLAGS = $(LIBTWINE_CPPFLAGS) \
 	$(LIBMQ_CPPFLAGS) \
 	$(LIBURI_CPPFLAGS) \
 	$(LIBSQL_CPPFLAGS) \
 	-I$(top_builddir)/libsupport -I$(top_srcdir)/libsupport
 
-twine_anansi_bridge_SOURCES = anansi-bridge.c
+twine_anansi_bridge_SOURCES = bridge.c
 
 twine_anansi_bridge_LDADD = \
 	$(LIBSQL_LOCAL_LIBS) $(LIBSQL_LIBS) \
@@ -40,16 +44,27 @@ twine_anansi_bridge_LDADD = \
 	$(LIBMQ_LOCAL_LIBS) $(LIBMQ_LIBS) \
 	$(top_builddir)/libsupport/libsupport.la
 
+## anansi.so is a plug-in for Twine which (a) provides a handler for
+## application/x-anansi-url messages, and (b) provides an MQ implementation
+## allowing Twine to be fed directly from the Anansi database.
+
 anansi_la_CPPFLAGS = $(LIBTWINE_CPPFLAGS) \
 	$(LIBURI_CPPFLAGS) \
 	$(LIBAWSCLIENT_CPPFLAGS) \
-	$(LIBJANSSON_CPPFLAGS)
+	$(LIBMQ_CPPFLAGS) \
+	$(LIBCLUSTER_CPPFLAGS) \
+	$(LIBJANSSON_CPPFLAGS) \
+	$(LIBSQL_CPPFLAGS)
 
-anansi_la_SOURCES = anansi-handler.c
+anansi_la_SOURCES = p_anansi-plugin.h \
+	plugin.c handler.c mq.c file.c s3.c
 
-anansi_la_LDFLAGS = -avoid-version -module
+anansi_la_LDFLAGS = -avoid-version -module -no-undefined
 
 anansi_la_LIBADD = $(LIBTWINE_LOCAL_LIBS) $(LIBTWINE_LIBS) \
 	$(LIBURI_LOCAL_LIBS) $(LIBURI_LIBS) \
+	$(LIBMQ_LOCAL_LIBS) $(LIBMQ_LIBS) \
+	$(LIBCLUSTER_LOCAL_LIBS) $(LIBCLUSTER_LIBS) \
 	$(LIBAWSCLIENT_LOCAL_LIBS) $(LIBAWSCLIENT_LIBS) \
-	$(LIBJANSSON_LOCAL_LIBS) $(LIBJANSSON_LIBS)
+	$(LIBJANSSON_LOCAL_LIBS) $(LIBJANSSON_LIBS) \
+	$(LIBSQL_LOCAL_LIBS) $(LIBSQL_LIBS)
