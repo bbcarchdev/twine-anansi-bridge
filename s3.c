@@ -166,11 +166,12 @@ anansi_s3_bucket_create(struct anansi_context_struct *context, URI_INFO *info)
 		twine_logf(LOG_CRIT, PLUGIN_NAME ": failed to create bucket object for <s3://%s>\n", info->host);
 		return NULL;
 	}
+	aws_s3_set_logger(bucket, twine_vlogf);
 	if(context->s3endpoint)
 	{
 		aws_s3_set_endpoint(bucket, context->s3endpoint);
 	}
-	if(info->auth)
+	if(info->auth && strlen(info->auth))
 	{
 		t = strchr(info->auth, ':');
 		if(t)
@@ -203,9 +204,17 @@ anansi_s3_bucket_create(struct anansi_context_struct *context, URI_INFO *info)
 		{
 			aws_s3_set_access(bucket, context->s3access);
 		}
+		else
+		{
+			twine_logf(LOG_WARNING, PLUGIN_NAME ": no S3 access key has been provided in the configuration\n");
+		}
 		if(context->s3secret)
 		{
-			aws_s3_set_access(bucket, context->s3secret);
+			aws_s3_set_secret(bucket, context->s3secret);
+		}
+		else
+		{
+			twine_logf(LOG_WARNING, PLUGIN_NAME ": no S3 secret key has been provided in the configuration\n");
 		}
 	}
 	return bucket;
@@ -269,7 +278,7 @@ anansi_s3_ingest_info_bucket(struct anansi_context_struct *context, AWSS3BUCKET 
 	CURL *ch;
 	struct ingestinfo_struct info;
 	long status;
-	int r;
+	int r, e;
 	char *urlbuf;
 	json_error_t err;
 	
@@ -285,14 +294,14 @@ anansi_s3_ingest_info_bucket(struct anansi_context_struct *context, AWSS3BUCKET 
 	strcat(urlbuf, ".json");
 	memset(&info, 0, sizeof(struct ingestinfo_struct));
 	req = aws_s3_request_create(bucket, urlbuf, "GET");
-	free(urlbuf);
 	ch = aws_request_curl(req);
 	curl_easy_setopt(ch, CURLOPT_WRITEFUNCTION, ingest_write);
 	curl_easy_setopt(ch, CURLOPT_WRITEDATA, (void *) &info);
 	curl_easy_setopt(ch, CURLOPT_VERBOSE, context->s3verbose);
-	if(aws_request_perform(req) || !info.buf)
+	if((e = aws_request_perform(req)) || !info.buf)
 	{
-		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource '%s'\n", resource);
+		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource <%s>: %s\n", urlbuf, curl_easy_strerror(e));
+		free(urlbuf);
 		free(info.buf);
 		aws_request_destroy(req);
 		return -1;
@@ -301,7 +310,8 @@ anansi_s3_ingest_info_bucket(struct anansi_context_struct *context, AWSS3BUCKET 
 	curl_easy_getinfo(ch, CURLINFO_RESPONSE_CODE, &status);
 	if(status != 200)
 	{
-		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource '%s' with status %ld\n", resource, status);
+		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource <%s> with status %ld\n", urlbuf, status);
+		free(urlbuf);
 		free(info.buf);
 		aws_request_destroy(req);
 		return -1;
@@ -318,6 +328,7 @@ anansi_s3_ingest_info_bucket(struct anansi_context_struct *context, AWSS3BUCKET 
 		json_decref(*dict);
 		r = -1;
 	}
+	free(urlbuf);
 	free(info.buf);
 	aws_request_destroy(req);
 	return r;
@@ -330,7 +341,7 @@ anansi_s3_ingest_payload_bucket(struct anansi_context_struct *context, TWINEGRAP
 	CURL *ch;
 	struct ingestinfo_struct info;
 	long status;
-	int r;
+	int r, e;
 	char *type;
 
 	memset(&info, 0, sizeof(struct ingestinfo_struct));
@@ -339,9 +350,9 @@ anansi_s3_ingest_payload_bucket(struct anansi_context_struct *context, TWINEGRAP
 	curl_easy_setopt(ch, CURLOPT_WRITEFUNCTION, ingest_write);
 	curl_easy_setopt(ch, CURLOPT_WRITEDATA, (void *) &info);
 	curl_easy_setopt(ch, CURLOPT_VERBOSE, context->s3verbose);
-	if(aws_request_perform(req) || !info.buf)
+	if((e = aws_request_perform(req)) || !info.buf)
 	{
-		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource '%s'\n", resource);
+		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource <%s>: %s\n", resource, curl_easy_strerror(e));
 		free(info.buf);
 		aws_request_destroy(req);
 		return -1;
@@ -350,7 +361,7 @@ anansi_s3_ingest_payload_bucket(struct anansi_context_struct *context, TWINEGRAP
 	curl_easy_getinfo(ch, CURLINFO_RESPONSE_CODE, &status);
 	if(status != 200)
 	{
-		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource '%s' with status %ld\n", resource, status);
+		twine_logf(LOG_ERR, PLUGIN_NAME ": failed to request resource <%s> with status %ld\n", resource, status);
 		free(info.buf);
 		aws_request_destroy(req);
 		return -1;
