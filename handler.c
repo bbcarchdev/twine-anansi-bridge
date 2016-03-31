@@ -278,6 +278,7 @@ anansi_handler_bulk(TWINE *restrict context, const char *restrict mime, const un
 		t = ustrnchr(start, '\n', remaining);
 		if(t == start)
 		{
+			t++;
 			continue;
 		}
 		if(!t)
