@@ -159,7 +159,8 @@ anansi_s3_bucket_create(struct anansi_context_struct *context, URI_INFO *info)
 	AWSS3BUCKET *bucket;
 	const char *t;
 	char *p;
-	
+
+	bucket = aws_s3_create(info->host);
 	if(!bucket)
 	{
 		twine_logf(LOG_CRIT, PLUGIN_NAME ": failed to create bucket object for <s3://%s>\n", info->host);
