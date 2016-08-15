@@ -7,5 +7,5 @@ Build-Depends: debhelper (>= 8.0.0), autoconf, automake, libtool, libltdl-dev, l
 
 Package: twine-anansi-bridge
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, libtwine, libcurl3, librdf0, libjansson4, libsql, libmq, libcluster, libawsclient
+Depends: ${misc:Depends}, ${shlibs:Depends}, libtwine (>= 7.0.0), libcurl3, librdf0, libjansson4, libsql, libmq, libcluster, libawsclient
 Description: Linked Data workflow engine (module API)
