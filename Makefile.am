@@ -2,7 +2,7 @@
 ##
 ## Author: Mo McRoberts <mo.mcroberts@bbc.co.uk>
 ##
-## Copyright (c) 2014 BBC
+## Copyright (c) 2014-2017 BBC
 ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");
 ##  you may not use this file except in compliance with the License.
@@ -18,31 +18,11 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-DIST_SUBDIRS = m4 libsupport
+DIST_SUBDIRS = m4
 
-SUBDIRS = libsupport .
-
-sbin_PROGRAMS = twine-anansi-bridge
+SUBDIRS = .
 
 twinemodule_LTLIBRARIES = anansi.la
-
-## twine-anansi-bridge is a daemon which reads updates from the Anansi
-## queue database and injects application/x-anansi-url messages into
-## a message queue via libmq.
-
-twine_anansi_bridge_CPPFLAGS = $(LIBTWINE_CPPFLAGS) \
-	$(LIBMQ_CPPFLAGS) \
-	$(LIBURI_CPPFLAGS) \
-	$(LIBSQL_CPPFLAGS) \
-	-I$(top_builddir)/libsupport -I$(top_srcdir)/libsupport
-
-twine_anansi_bridge_SOURCES = bridge.c
-
-twine_anansi_bridge_LDADD = \
-	$(LIBSQL_LOCAL_LIBS) $(LIBSQL_LIBS) \
-	$(LIBTWINE_LOCAL_LIBS) $(LIBTWINE_LIBS) \
-	$(LIBMQ_LOCAL_LIBS) $(LIBMQ_LIBS) \
-	$(top_builddir)/libsupport/libsupport.la
 
 ## anansi.so is a plug-in for Twine which (a) provides a handler for
 ## application/x-anansi-url messages, and (b) provides an MQ implementation

@@ -71,7 +71,6 @@ BT_DEFINE_PREFIX
 
 AC_CONFIG_FILES([Makefile
 m4/Makefile
-libsupport/Makefile
 ])
 
 AC_OUTPUT
