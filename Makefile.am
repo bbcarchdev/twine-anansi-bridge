@@ -22,19 +22,20 @@ DIST_SUBDIRS = m4
 
 SUBDIRS = .
 
-twinemodule_LTLIBRARIES = anansi.la
-
-## anansi.so is a plug-in for Twine which (a) provides a handler for
-## application/x-anansi-url messages, and (b) provides an MQ implementation
-## allowing Twine to be fed directly from the Anansi database.
-
-anansi_la_CPPFLAGS = $(LIBTWINE_CPPFLAGS) \
+AM_CPPFLAGS = @AM_CPPFLAGS@ $(LIBTWINE_CPPFLAGS) \
 	$(LIBURI_CPPFLAGS) \
 	$(LIBAWSCLIENT_CPPFLAGS) \
 	$(LIBMQ_CPPFLAGS) \
 	$(LIBCLUSTER_CPPFLAGS) \
 	$(LIBJANSSON_CPPFLAGS) \
 	$(LIBSQL_CPPFLAGS)
+
+
+twinemodule_LTLIBRARIES = anansi.la
+
+## anansi.so is a plug-in for Twine which (a) provides a handler for
+## application/x-anansi-url messages, and (b) provides an MQ implementation
+## allowing Twine to be fed directly from the Anansi database.
 
 anansi_la_SOURCES = p_anansi-plugin.h \
 	plugin.c handler.c mq.c file.c s3.c
@@ -48,3 +49,6 @@ anansi_la_LIBADD = $(LIBTWINE_LOCAL_LIBS) $(LIBTWINE_LIBS) \
 	$(LIBAWSCLIENT_LOCAL_LIBS) $(LIBAWSCLIENT_LIBS) \
 	$(LIBJANSSON_LOCAL_LIBS) $(LIBJANSSON_LIBS) \
 	$(LIBSQL_LOCAL_LIBS) $(LIBSQL_LIBS)
+
+reconf:
+	autoreconf -i && $(SHELL) ./config.status --recheck && $(SHELL) ./config.status
