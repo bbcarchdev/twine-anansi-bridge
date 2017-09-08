@@ -38,7 +38,7 @@ twinemodule_LTLIBRARIES = anansi.la
 ## allowing Twine to be fed directly from the Anansi database.
 
 anansi_la_SOURCES = p_anansi-plugin.h \
-	plugin.c handler.c mq.c file.c s3.c
+	plugin.c handler.c file.c s3.c
 
 anansi_la_LDFLAGS = -avoid-version -module -no-undefined
 

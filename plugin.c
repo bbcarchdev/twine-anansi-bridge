@@ -2,7 +2,7 @@
  *
  * Author: Mo McRoberts <mo.mcroberts@bbc.co.uk>
  *
- * Copyright (c) 2014-2016 BBC
+ * Copyright (c) 2014-2017 BBC
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,10 +32,6 @@ twine_entry(TWINE *context, TWINEENTRYTYPE type, void *handle)
 		case TWINE_ATTACHED:
 			twine_logf(LOG_DEBUG, PLUGIN_NAME " plug-in: initialising\n");
 			if(anansi_handler_init(context, handle))
-			{
-				return -1;
-			}
-			if(anansi_mq_init(handle))
 			{
 				return -1;
 			}
