@@ -5,15 +5,24 @@ compiler: clang
 before_install:
 - curl https://letsencrypt.org/certs/isrgrootx1.pem.txt | sudo tee /usr/share/ca-certificates/isrgrootx1.crt
 - echo "isrgrootx1.crt" | sudo tee -a /etc/ca-certificates.conf
-- curl https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem.txt | sudo tee /usr/share/ca-certificates/lets-encrypt-x3-cross-signed.crt
+- curl https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem.txt | sudo tee
+  /usr/share/ca-certificates/lets-encrypt-x3-cross-signed.crt
 - echo "lets-encrypt-x3-cross-signed.crt" | sudo tee -a /etc/ca-certificates.conf
 - sudo update-ca-certificates
-- curl https://raw.githubusercontent.com/bbcarchdev/bbcarchdev-keys/main/bbcarchdev-apt.asc | sudo apt-key add -
-- sudo add-apt-repository "deb [arch=amd64] https://apt.bbcarchdev.net/debian wheezy main ports dev stage live"
-- sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+- curl https://raw.githubusercontent.com/bbcarchdev/bbcarchdev-keys/main/bbcarchdev-apt.asc
+  | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://apt.bbcarchdev.net/debian wheezy
+  main ports dev stage live"
+- sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)
+  main universe restricted multiverse"
 - sudo apt-get update -qq
-- sudo apt-get install -qq libltdl-dev librdf0-dev uuid-dev liburi-dev libsql-dev libjansson-dev libawsclient-dev libmq libmq-dev libtwine-dev libcluster-dev automake autoconf libtool pkg-config
+- sudo apt-get install -qq libltdl-dev librdf0-dev uuid-dev liburi-dev libsql-dev
+  libjansson-dev libawsclient-dev libmq libmq-dev libtwine-dev libcluster-dev automake
+  autoconf libtool pkg-config
 before_script:
 - autoreconf -f -i
 script:
 - ./configure && make && make check
+notifications:
+  slack:
+    secure: r0RbR0+iD9FXYv4ux3XM2CiHKk+qVMTtaHDRcJSJVnrOZy6s5N9vrokPQj8xKiqEVQBEmBj7f2U6wlBPhrBQQFYU2rF163ykv6MEEFle1oFkTj4Xly9EfNGBg7Agyf13r1rspiNF8cef7IU6qZNdYU1QNZ0OVZnONcgNn/UpTeGNA8jr4WYJCfmuLg5OYnn/cAMI+4SgELWEHWVmwxfmtmU9PeBTO8PeQ5+XyoJHOSkEU4T8uX25cKIoLcAQVaHEyak7z3IiMev2biP6l+Dhz2y77lGX06IUC7RueW4OirPMt2jhELSEUO8QLiGRbz7P8oWYz1hzWKhIf+vjImQh5N/u6FnJl0mbN6AQQKAVq30BMYpxJxDyVZuiVnJ7TUNBzkhJ24M++GP9RkWvN9S3N+FKE8eJiptnj2LeYP/zQH6cK2LsgwBjsXrdtI6YjSSgd9K1X2aFdIN0GvyPpuBmr5i6Utd9iZurUqA9kI7RYQBFyiQjbTP6I0X+Tuoi52Q7kbvzMkNXgEzK29r+YZ6to9MUwEDlx1mzi4pfIVM5B+MZCDEq7nUClFPrQOiCXuijn+PCdn2Krs4i0YRJCZQn1Js9E5ljyM+VnH68dG6P7XD/5iSJ/56FCqu/4YvuWUx9qBTtlkqv7hAytJB1x3fqZSPuSGNQr1p56/jJnC0XJIM=
